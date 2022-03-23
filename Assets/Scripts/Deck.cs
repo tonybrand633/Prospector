@@ -17,6 +17,8 @@ public class Deck : MonoBehaviour
     {
         xmlr = new XMLReader();
         xmlr.Parse(deckXMLText);
-
+        string res = "";
+        res = xmlr.res["xml"][0]["decorator"][1].GetAttr("type");
+        Debug.Log(res);
     }
 }
