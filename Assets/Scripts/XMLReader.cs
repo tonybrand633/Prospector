@@ -303,4 +303,10 @@ public class XMLHashtable
     {
         return nodeKeys.IndexOf(key) != -1;
     }
+
+
+    public bool HasAttr(string key) 
+    {
+        return attrKeys.IndexOf(key) != -1; 
+    }
 }
