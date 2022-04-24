@@ -41,3 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: deco
+    uniqueID: 2892532867
+    locked: 0
+  - name: letter
+    uniqueID: 718690711
+    locked: 0
+  - name: back
+    uniqueID: 1580911989
+    locked: 0

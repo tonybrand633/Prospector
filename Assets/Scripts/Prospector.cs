@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class Prospector : MonoBehaviour
 {
-    public static Prospector singlton;
+    public Prospector S;
     public Deck deck;
-    public TextAsset deckXML;
+    public TextAsset xmlText;
+    // Start is called before the first frame update
 
     void Awake()
     {
-        singlton = this;    
+        S = this;    
     }
 
-    // Start is called before the first frame update
     void Start()
     {
-        deck = this.GetComponent<Deck>();
-        deck.InitDeck(deckXML.text);
+        deck = GetComponent<Deck>();
+        deck.InitDeck(xmlText.text);
     }
 
     // Update is called once per frame
