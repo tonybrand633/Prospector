@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 552346886}
   - component: {fileID: 552346890}
   - component: {fileID: 552346889}
+  - component: {fileID: 552346891}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -283,3 +284,25 @@ MonoBehaviour:
   S: {fileID: 0}
   deck: {fileID: 0}
   xmlText: {fileID: 4900000, guid: c76312a0fb08948699e1abf935e4a957, type: 3}
+  layout: {fileID: 0}
+  layoutText: {fileID: 4900000, guid: 61f3f05951a2f4d98b35bddbc7549908, type: 3}
+--- !u!114 &552346891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 552346885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82e9cfc774922b449bc15dcae0bf12dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  multiplier: {x: 0, y: 0}
+  LayerIDName:
+  - Row0
+  - Row1
+  - Row2
+  - Row3
+  - Discard
+  - Draw

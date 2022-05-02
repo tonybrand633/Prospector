@@ -36,8 +36,11 @@ public class Deck : MonoBehaviour
     public Transform DeckAnchor;
     public Dictionary<string, Sprite> deckSuits;
 
+    Camera cam;
+
     public void InitDeck(string XMLText) 
-    {       
+    {
+        cam = GetComponent<Camera>();
         if (GameObject.Find("_Deck") == null)
         {
             GameObject _Deck = new GameObject("_Deck");
@@ -135,7 +138,7 @@ public class Deck : MonoBehaviour
             cardDefs.Add(cardDef);
         }
         MakeCards();
-        ShuffCard(ref cards);
+        
     }
 
     public CardDefinition GetDefByRank(int rank) 
@@ -183,7 +186,8 @@ public class Deck : MonoBehaviour
             GameObject cardGo = Instantiate(prefabCard);
             cardGo.transform.parent = DeckAnchor;
             Card card = cardGo.GetComponent<Card>();
-            cardGo.transform.position = new Vector3(i%13*3,i/13*4,0);
+            cardGo.transform.position = cam.ScreenToWorldPoint(new Vector3(i % 13+i%Screen.width, i / 13+i%Screen.height, 0));
+            
             cardGo.name = cardNames[i];
             string cardName = cardNames[i];
             card.suit = cardName[0].ToString();

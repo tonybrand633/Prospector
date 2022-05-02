@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4791394221374407578}
   - component: {fileID: 4791394221374407577}
   - component: {fileID: 4791394221374407579}
-  - component: {fileID: 4791394221374407572}
+  - component: {fileID: -928076400878693045}
   m_Layer: 0
   m_Name: PrefabCard
   m_TagString: Untagged
@@ -97,7 +97,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2.56, y: 3.56, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4791394221374407572
+--- !u!114 &-928076400878693045
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -106,6 +106,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 4791394221374407576}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6150efa56f09df34facdb8eb0171de06, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f931fff3e9041247ba8f810d7f2c41b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  suit: 
+  rank: 0
+  color: {r: 0, g: 0, b: 0, a: 1}
+  colorN: Black
+  back: {fileID: 0}
+  def:
+    face: 
+    rank: 0
+    pips: []
+  state: 0
+  hiddenBy: []
+  LayerID: 0
+  slotDef:
+    slotID: 0
+    layerID: 0
+    layerName: Default
+    type: slot
+    x: 0
+    y: 0
+    faceUp: 0
+    hiddenBy: 
+    xStagger: {x: 0, y: 0}
