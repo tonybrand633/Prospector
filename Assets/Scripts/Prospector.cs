@@ -38,11 +38,12 @@ public class Prospector : MonoBehaviour
         deck = GetComponent<Deck>();
         deck.InitDeck(xmlText.text);
         deck.ShuffCard(ref deck.cards);
-
+        drawPile = ConvertCardToCardProspector(deck.cards);
         //初始化记录布局
         layout = GetComponent<Layout>();
         layout.ReadLayOut(layoutText.text);
-        drawPile = ConvertCardToCardProspector(deck.cards);
+        
+        LayGame();
     }
 
     // Update is called once per frame
@@ -67,14 +68,40 @@ public class Prospector : MonoBehaviour
     //我的回合！抽卡！
     CardProspector Draw() 
     {
+        //随机抽走了布局的卡片
         CardProspector card = drawPile[0];        
         drawPile.RemoveAt(0);
+        //Debug.Log(drawPile.Count);
         return card;
     }
 
     //创建游戏布局
     void LayGame() 
     {
-        
+        if (layoutAnchor==null) 
+        {
+            GameObject anchorGameobject = new GameObject("_anchorGameobject");
+            layoutAnchor = anchorGameobject.transform;
+            //定位
+            layoutAnchor.transform.position = layoutCenter;
+        }
+
+        CardProspector cp;
+        foreach (SlotDef sDef in layout.SlotDefs)
+        {
+            cp = Draw();
+            cp.FaceUp = sDef.faceUp;
+            cp.transform.parent = layoutAnchor;
+            cp.transform.localPosition = new Vector3(layout.multiplier.x * sDef.x, layout.multiplier.y * sDef.y, -sDef.layerID);
+
+            cp.LayerID = sDef.layerID;
+            cp.slotDef = sDef;
+            cp.SetAllSpriteRendererName(sDef.layerName);
+            cp.state = CardState.tableau;
+
+            tableau.Add(cp);
+
+        }
+
     }
 }

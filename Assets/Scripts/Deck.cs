@@ -186,7 +186,7 @@ public class Deck : MonoBehaviour
             GameObject cardGo = Instantiate(prefabCard);
             cardGo.transform.parent = DeckAnchor;
             Card card = cardGo.GetComponent<Card>();
-            cardGo.transform.position = cam.ScreenToWorldPoint(new Vector3(i % 13+i%Screen.width, i / 13+i%Screen.height, 0));
+            cardGo.transform.position = new Vector3((i % 13)*3, i / 13*4, 0);
             
             cardGo.name = cardNames[i];
             string cardName = cardNames[i];
@@ -208,7 +208,8 @@ public class Deck : MonoBehaviour
                 if (decoSuit.type == "letter")
                 {
                     sr.sprite = rankSprites[i%13+1];
-                    sr.sortingLayerName = "letter";
+                    //sr.sortingOrder = 1;
+                    //sr.sortingLayerName = "letter";
                     //sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 1);
 
                     //Debug.Log(sr.color.gamma);
@@ -233,7 +234,8 @@ public class Deck : MonoBehaviour
                     decoS.transform.localPosition = decoSuit.loc;
                     decoS.transform.localScale = Vector3.one * decoSuit.scale;
                     decoS.name = decoSuit.type;
-                    sr.sortingLayerName = "deco";
+                    //sr.sortingOrder = 1;
+                    //sr.sortingLayerName = "deco";
                 }
             }
 
@@ -251,11 +253,12 @@ public class Deck : MonoBehaviour
                 decoGo.transform.localScale = Vector3.one * deco.scale;
                 decoGo.name = "deco";
                 sr.flipY = deco.flip;
-                sr.sortingLayerName = "deco";
+                //sr.sortingOrder = 1;
+                //sr.sortingLayerName = "deco";
                 //decoGo.transform.localScale = deco.scale;
 
             }
-            if (thisDef.face != "")
+            if (thisDef.face != null)
             {
                 string utilName = "FaceCard_";
                 GameObject faceGo = Instantiate(prefabSprite);
@@ -267,15 +270,18 @@ public class Deck : MonoBehaviour
                 faceGo.transform.parent = cardGo.transform;
                 faceGo.transform.localPosition = Vector3.zero;
                 faceGo.name = "faceGo";
-                sr.sortingLayerName = "deco";
+                //sr.sortingOrder = 1;
+                //sr.sortingLayerName = "deco";
             }
 
             GameObject back = Instantiate(prefabSprite);
             sr = back.GetComponent<SpriteRenderer>();
             sr.sprite = cardback;            
             back.transform.parent = cardGo.transform;
+            back.name = "back";
             back.transform.localPosition = Vector3.zero;
-            sr.sortingLayerName = "back";
+            //sr.sortingOrder = 2;
+            //sr.sortingLayerName = "back";
             card.back = back;
             card.FaceUp = true;
 

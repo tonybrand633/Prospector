@@ -27,6 +27,14 @@ public class Card : MonoBehaviour
 
     public CardDefinition def;//解析自DeckXML.xmls
 
+
+    public SpriteRenderer[] spriteRenderers;
+
+    void Start()
+    {
+        SetAllSpriteRendererOrder(0);        
+    }
+
     public bool FaceUp 
     {
         get 
@@ -37,6 +45,50 @@ public class Card : MonoBehaviour
         {
             back.SetActive(!value);
         }
+    }
+
+    public void GetAllSpriteRenderer ()
+    {
+        if (spriteRenderers==null||spriteRenderers.Length==0) 
+        {
+            spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+        }
+    }
+
+    public void SetAllSpriteRendererName(string LName) 
+    {
+        GetAllSpriteRenderer();
+        foreach (SpriteRenderer sr in spriteRenderers)
+        {
+            Debug.Log(LName);
+            sr.sortingLayerName = LName;
+
+        }
+    }
+
+    public void SetAllSpriteRendererOrder(int OIndex) 
+    {
+        GetAllSpriteRenderer();
+        foreach (SpriteRenderer sr in spriteRenderers) 
+        {            
+            if (sr.gameObject.name==this.gameObject.name) 
+            {
+                sr.sortingOrder = OIndex;
+                continue;
+            }
+            switch (sr.gameObject.name) 
+            {
+                case "back":
+                    sr.sortingOrder = OIndex + 2;
+                    break;
+                case "face":
+                default:
+                    sr.sortingOrder = OIndex + 1;
+                    break;
+            }
+        }
+        
+        
     }
 
 }
