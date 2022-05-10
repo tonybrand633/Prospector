@@ -47,6 +47,12 @@ public class Card : MonoBehaviour
         }
     }
 
+
+    public virtual void OnMouseUpAsButton() 
+    {
+        print(name);
+    }
+
     public void GetAllSpriteRenderer ()
     {
         if (spriteRenderers==null||spriteRenderers.Length==0) 
@@ -59,8 +65,7 @@ public class Card : MonoBehaviour
     {
         GetAllSpriteRenderer();
         foreach (SpriteRenderer sr in spriteRenderers)
-        {
-            Debug.Log(LName);
+        {            
             sr.sortingLayerName = LName;
 
         }

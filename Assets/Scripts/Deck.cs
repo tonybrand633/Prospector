@@ -186,7 +186,7 @@ public class Deck : MonoBehaviour
             GameObject cardGo = Instantiate(prefabCard);
             cardGo.transform.parent = DeckAnchor;
             Card card = cardGo.GetComponent<Card>();
-            cardGo.transform.position = new Vector3((i % 13)*3, i / 13*4, 0);
+            //cardGo.transform.position = new Vector3((i % 13)*3, i / 13*4, 0);
             
             cardGo.name = cardNames[i];
             string cardName = cardNames[i];

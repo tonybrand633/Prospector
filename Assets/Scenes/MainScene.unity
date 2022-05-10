@@ -179,7 +179,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 9
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -286,6 +286,14 @@ MonoBehaviour:
   xmlText: {fileID: 4900000, guid: c76312a0fb08948699e1abf935e4a957, type: 3}
   layout: {fileID: 0}
   layoutText: {fileID: 4900000, guid: 61f3f05951a2f4d98b35bddbc7549908, type: 3}
+  layoutCenter: {x: 0, y: 0.91, z: 0}
+  xoffset: 3
+  yoffset: -2.5
+  layoutAnchor: {fileID: 0}
+  target: {fileID: 0}
+  tableau: []
+  discardPile: []
+  drawPile: []
 --- !u!114 &552346891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -299,10 +307,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   multiplier: {x: 0, y: 0}
+  SlotDefs: []
+  drawPile:
+    slotID: 0
+    layerID: 0
+    layerName: Default
+    type: slot
+    x: 0
+    y: 0
+    faceUp: 0
+    hiddenBy: 
+    xStagger: {x: 0, y: 0}
+  discardPile:
+    slotID: 0
+    layerID: 0
+    layerName: Default
+    type: slot
+    x: 0
+    y: 0
+    faceUp: 0
+    hiddenBy: 
+    xStagger: {x: 0, y: 0}
   LayerIDName:
-  - Row0
-  - Row1
-  - Row2
-  - Row3
+  - Raw0
+  - Raw1
+  - Raw2
+  - Raw3
   - Discard
   - Draw

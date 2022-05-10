@@ -81,9 +81,11 @@ public class Layout : MonoBehaviour
                     break;
                 case "drawpile":
                     slotDef.xStagger.x = float.Parse(slot.att("xstagger"));
+                    drawPile = slotDef;
                     SlotDefs.Add(slotDef);
                     break;
                 case "discardpile":
+                    discardPile = slotDef;
                     SlotDefs.Add(slotDef);
                     break;
             }
