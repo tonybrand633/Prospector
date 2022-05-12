@@ -20,10 +20,10 @@ public class Prospector : MonoBehaviour
     public CardProspector target;
     public List<CardProspector> tableau;
     public List<CardProspector> discardPile;
-
-
-
     public List<CardProspector> drawPile;
+
+    public float timer = 2f;
+    public float timeBefore;
 
     // Start is called before the first frame update
 
@@ -57,6 +57,7 @@ public class Prospector : MonoBehaviour
         switch (cd.state)
         {
             case CardState.target:
+                
                 break;
             case CardState.drawpile:
                 MoveToDiscard(target);
@@ -64,8 +65,37 @@ public class Prospector : MonoBehaviour
                 UpdateDrawPile();
                 break;
             case CardState.tableau:
+                
+                bool validMatch = true;
+                if (cd.FaceUp == false) validMatch = false;
+                if (!AdjacentRank(cd, target)) validMatch = false;
+                if (!validMatch)
+                {
+                    return;
+                }
+                //Debug.Log("TouchTableU");
+                tableau.Remove(cd);
+                MoveToTarget(cd);
                 break;
         }
+    }
+
+    public bool AdjacentRank(CardProspector cd,CardProspector target) 
+    {
+        //两个中有一个朝上，即返回false,感叹号代入到变量去思考
+        if (!cd.FaceUp||!target.FaceUp) 
+        {
+            return false;
+        }
+
+        if (Mathf.Abs(cd.rank - target.rank)==1) 
+        {
+            return true;
+        }
+        if (cd.rank == 1 && target.rank == 13) return true;
+        if (cd.rank == 13 && target.rank == 1) return true;
+
+        return false;
     }
 
     void MoveToDiscard(CardProspector cd) 
@@ -152,6 +182,18 @@ public class Prospector : MonoBehaviour
         return card;
     }
 
+    CardProspector FindCardBySlotID(int slotID) 
+    {
+        foreach (CardProspector cp in tableau) 
+        {
+            if (cp.slotID == slotID) 
+            {
+                return cp;
+            }
+        }
+        return null;
+    }
+
     //创建游戏布局
     void LayGame() 
     {
@@ -167,12 +209,14 @@ public class Prospector : MonoBehaviour
         CardProspector cp;
         foreach (SlotDef sDef in layout.SlotDefs)
         {
+
+
             cp = Draw();
             cp.FaceUp = sDef.faceUp;
             cp.transform.parent = layoutAnchor;
             cp.transform.localPosition = new Vector3(layout.multiplier.x * sDef.x, layout.multiplier.y * sDef.y, -sDef.layerID);
-
             cp.LayerID = sDef.layerID;
+            cp.slotID = sDef.slotID;
 
             //输出层级，和层级ID
             //Debug.Log(sDef.layerName);
@@ -181,12 +225,18 @@ public class Prospector : MonoBehaviour
             cp.SetAllSpriteRendererName(sDef.layerName);
             cp.state = CardState.tableau;
 
-            tableau.Add(cp);
+            tableau.Add(cp); 
         }
 
+        //移动一张牌到目标区域（弃牌区）
+        //对牌堆进行一次排列
         MoveToTarget(Draw());
-
         UpdateDrawPile();
+    }
 
+    void PutCard(CardProspector cp,SlotDef slotDef) 
+    {
+        cp.transform.localPosition = new Vector3(layout.multiplier.x * slotDef.x, layout.multiplier.y * slotDef.y, -slotDef.layerID);
+        
     }
 }

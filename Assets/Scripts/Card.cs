@@ -39,7 +39,7 @@ public class Card : MonoBehaviour
     {
         get 
         {
-            return back.activeSelf;
+            return !back.activeSelf;
         }
         set 
         {
@@ -116,7 +116,6 @@ public class Decorator
 
 }
 
-[System.Serializable]
 public class CardDefinition 
 {
     //每张牌的花色名称
