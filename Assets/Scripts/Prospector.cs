@@ -207,14 +207,15 @@ public class Prospector : MonoBehaviour
         }
 
         CardProspector cp;
+        float timer = 0;
         foreach (SlotDef sDef in layout.SlotDefs)
         {
-
-
             cp = Draw();
             cp.FaceUp = sDef.faceUp;
             cp.transform.parent = layoutAnchor;
-            cp.transform.localPosition = new Vector3(layout.multiplier.x * sDef.x, layout.multiplier.y * sDef.y, -sDef.layerID);
+            IEnumerator putCard = PutCard(cp, sDef,timer);
+            StartCoroutine(putCard);
+            //cp.transform.localPosition = new Vector3(layout.multiplier.x * sDef.x, layout.multiplier.y * sDef.y, -sDef.layerID);
             cp.LayerID = sDef.layerID;
             cp.slotID = sDef.slotID;
 
@@ -225,7 +226,8 @@ public class Prospector : MonoBehaviour
             cp.SetAllSpriteRendererName(sDef.layerName);
             cp.state = CardState.tableau;
 
-            tableau.Add(cp); 
+            tableau.Add(cp);
+            timer += 0.2f;
         }
 
         //移动一张牌到目标区域（弃牌区）
@@ -234,8 +236,10 @@ public class Prospector : MonoBehaviour
         UpdateDrawPile();
     }
 
-    void PutCard(CardProspector cp,SlotDef slotDef) 
+    IEnumerator PutCard(CardProspector cp,SlotDef slotDef,float timer) 
     {
+        yield return new WaitForSeconds(1f+timer);
+        
         cp.transform.localPosition = new Vector3(layout.multiplier.x * slotDef.x, layout.multiplier.y * slotDef.y, -slotDef.layerID);
         
     }
