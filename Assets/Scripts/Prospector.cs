@@ -76,7 +76,24 @@ public class Prospector : MonoBehaviour
                 //Debug.Log("TouchTableU");
                 tableau.Remove(cd);
                 MoveToTarget(cd);
+                confirmCover();
                 break;
+        }
+    }
+
+    public void confirmCover() 
+    {
+        foreach (CardProspector temp in tableau) 
+        {
+            bool up = true;
+            foreach (CardProspector cover in temp.hiddenBy) 
+            {
+                if (cover.state == CardState.tableau) 
+                {
+                    up = false;
+                }
+            }
+            temp.FaceUp = up;
         }
     }
 
@@ -210,10 +227,15 @@ public class Prospector : MonoBehaviour
         float timer = 0;
         foreach (SlotDef sDef in layout.SlotDefs)
         {
+            if (sDef.type == "drawpile"||sDef.type == "discardpile") 
+            {
+                continue;
+            }
             cp = Draw();
             cp.FaceUp = sDef.faceUp;
             cp.transform.parent = layoutAnchor;
             IEnumerator putCard = PutCard(cp, sDef,timer);
+            //使用协程发牌
             StartCoroutine(putCard);
             //cp.transform.localPosition = new Vector3(layout.multiplier.x * sDef.x, layout.multiplier.y * sDef.y, -sDef.layerID);
             cp.LayerID = sDef.layerID;
@@ -227,7 +249,17 @@ public class Prospector : MonoBehaviour
             cp.state = CardState.tableau;
 
             tableau.Add(cp);
-            timer += 0.2f;
+            timer += 0.1f;
+        }
+
+        //添加hiddenBy关系
+        foreach (CardProspector tcp in tableau)
+        {
+            foreach (int hiddenID in tcp.slotDef.hiddenBy)
+            {
+                CardProspector hiddenCp =  FindCardBySlotID(hiddenID);
+                tcp.hiddenBy.Add(hiddenCp);
+            }
         }
 
         //移动一张牌到目标区域（弃牌区）
@@ -240,7 +272,6 @@ public class Prospector : MonoBehaviour
     {
         yield return new WaitForSeconds(1f+timer);
         
-        cp.transform.localPosition = new Vector3(layout.multiplier.x * slotDef.x, layout.multiplier.y * slotDef.y, -slotDef.layerID);
-        
+        cp.transform.localPosition = new Vector3(layout.multiplier.x * slotDef.x, layout.multiplier.y * slotDef.y, -slotDef.layerID);        
     }
 }
