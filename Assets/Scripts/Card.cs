@@ -50,7 +50,7 @@ public class Card : MonoBehaviour
 
     public virtual void OnMouseUpAsButton() 
     {
-        print(name);
+        //print(name);
     }
 
     public void GetAllSpriteRenderer ()

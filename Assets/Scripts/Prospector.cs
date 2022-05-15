@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class Prospector : MonoBehaviour
 {
@@ -57,15 +58,16 @@ public class Prospector : MonoBehaviour
         switch (cd.state)
         {
             case CardState.target:
-                
+
                 break;
             case CardState.drawpile:
                 MoveToDiscard(target);
                 MoveToTarget(Draw());
                 UpdateDrawPile();
+                checkWin();
                 break;
             case CardState.tableau:
-                
+
                 bool validMatch = true;
                 if (cd.FaceUp == false) validMatch = false;
                 if (!AdjacentRank(cd, target)) validMatch = false;
@@ -77,8 +79,64 @@ public class Prospector : MonoBehaviour
                 tableau.Remove(cd);
                 MoveToTarget(cd);
                 confirmCover();
+                checkWin();
                 break;
         }
+    }
+
+    public void checkWin() 
+    {
+        bool Over = true;
+        //bool gameOver = false;
+        foreach (CardProspector cd in tableau) 
+        {            
+            if (cd.FaceUp == true) 
+            {
+                if (cd.rank - 1 == target.rank || cd.rank + 1 == target.rank)
+                {             
+                    Over = false;
+                    break;
+                    //return false;
+                }                
+            }            
+        }
+
+        if (Over)
+        {
+            Debug.Log("You need Draw A New Card");
+        }
+        else 
+        {
+            Debug.Log("Not over Yet");                     
+        }
+
+        if (tableau.Count==0) 
+        {
+            
+            //gameOver = true;
+            GameOver(true);
+                  
+        }
+        if (drawPile.Count<=0) 
+        {
+           
+            //gameOver = false;
+            GameOver(false);                        
+        }
+    }
+
+    void GameOver(bool gameOver) 
+    {
+        if (gameOver)
+        {
+            Debug.Log("You Win!!!!!");
+        }
+        else 
+        {
+            Debug.Log("You Lose");
+        }
+        
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainScene");
     }
 
     public void confirmCover() 
