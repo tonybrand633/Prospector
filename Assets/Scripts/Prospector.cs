@@ -3,9 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+
+public enum ScoreEvent 
+{
+    draw,
+    mine,
+    mineGold,
+    gameLose,
+    gameWin
+}
+
 public class Prospector : MonoBehaviour
 {
     public static Prospector S;
+    public static int HIGH_SCORE_PRE_ROUND;
+    public static int HIGH_SCORE_THIS_ROUND;
+    public static int HIGH_SCORE;
+    public static int SCORE_CONTINUE;
     public Deck deck;
     public TextAsset xmlText;
 
@@ -30,7 +44,15 @@ public class Prospector : MonoBehaviour
 
     void Awake()
     {
-        S = this;    
+        S = this;
+        Debug.Log("上一轮分数"+HIGH_SCORE_PRE_ROUND);
+        Debug.Log("本轮分数"+HIGH_SCORE_THIS_ROUND);
+
+        if (PlayerPrefs.HasKey("HIGH_SCORE_PRE_ROUND"))
+        {
+            HIGH_SCORE_PRE_ROUND = PlayerPrefs.GetInt("HIGH_SCORE_PRE_ROUND");
+        }
+        SCORE_CONTINUE = 0;
     }
 
     void Start()
@@ -43,14 +65,14 @@ public class Prospector : MonoBehaviour
         //初始化记录布局
         layout = GetComponent<Layout>();
         layout.ReadLayOut(layoutText.text);
-        
+
         LayGame();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void CardClicked(CardProspector cd)
@@ -64,6 +86,7 @@ public class Prospector : MonoBehaviour
                 MoveToDiscard(target);
                 MoveToTarget(Draw());
                 UpdateDrawPile();
+                ScoreManger(ScoreEvent.draw);
                 checkWin();
                 break;
             case CardState.tableau:
@@ -78,61 +101,110 @@ public class Prospector : MonoBehaviour
                 //Debug.Log("TouchTableU");
                 tableau.Remove(cd);
                 MoveToTarget(cd);
+                ScoreManger(ScoreEvent.mine);
                 confirmCover();
                 checkWin();
                 break;
         }
     }
 
-    public void checkWin() 
+    public void checkWin()
     {
         bool Over = true;
         //bool gameOver = false;
-        foreach (CardProspector cd in tableau) 
-        {            
-            if (cd.FaceUp == true) 
+        foreach (CardProspector cd in tableau)
+        {
+            if (cd.FaceUp == true)
             {
                 if (cd.rank - 1 == target.rank || cd.rank + 1 == target.rank)
-                {             
+                {
                     Over = false;
                     break;
                     //return false;
-                }                
-            }            
+                }
+            }
         }
 
         if (Over)
         {
-            Debug.Log("You need Draw A New Card");
+            //Debug.Log("You need Draw A New Card");
         }
-        else 
+        else
         {
-            Debug.Log("Not over Yet");                     
+            //Debug.Log("Not over Yet");
         }
 
-        if (tableau.Count==0) 
+        if (tableau.Count == 0)
         {
-            
+
             //gameOver = true;
             GameOver(true);
-                  
+
         }
-        if (drawPile.Count<=0) 
+        if (drawPile.Count <= 0)
         {
-           
+
             //gameOver = false;
-            GameOver(false);                        
+            GameOver(false);
         }
     }
 
-    void GameOver(bool gameOver) 
+    void ScoreManger(ScoreEvent sevt)
+    {
+        switch (sevt)
+        {
+
+            case ScoreEvent.draw:
+                SCORE_CONTINUE = 0;
+                break;
+            case ScoreEvent.mine:
+                SCORE_CONTINUE += 1;
+                HIGH_SCORE_THIS_ROUND += SCORE_CONTINUE;
+                AdjustHighScore(HIGH_SCORE_THIS_ROUND);
+                Debug.Log("连续得分:" + SCORE_CONTINUE);                
+                Debug.Log("当前得分" + (HIGH_SCORE_PRE_ROUND + HIGH_SCORE_THIS_ROUND).ToString());
+                Debug.Log("最高分" + HIGH_SCORE);
+                break;
+            case ScoreEvent.mineGold:
+                break;
+            default:
+                break;
+        }
+        switch (sevt)
+        {
+            case ScoreEvent.gameLose:
+                AdjustHighScore(HIGH_SCORE_PRE_ROUND);
+                HIGH_SCORE_PRE_ROUND = 0;
+                HIGH_SCORE_THIS_ROUND = 0;
+                PlayerPrefs.DeleteKey("HIGH_SCORE_PRE_ROUND");
+                break;
+            case ScoreEvent.gameWin:
+                AdjustHighScore(HIGH_SCORE_PRE_ROUND);
+                PlayerPrefs.SetInt("HIGH_SCORE_PRE_ROUND", HIGH_SCORE_THIS_ROUND + HIGH_SCORE_PRE_ROUND);
+                HIGH_SCORE_THIS_ROUND = 0;
+                break;
+        }
+    }
+
+    void AdjustHighScore(int highScorePreRound) 
+    {
+        if (highScorePreRound > HIGH_SCORE)
+        {
+            HIGH_SCORE = highScorePreRound;
+        }
+        PlayerPrefs.SetInt("HIGH_SCORE", HIGH_SCORE);
+    }
+
+    public void GameOver(bool gameOver) 
     {
         if (gameOver)
         {
+            ScoreManger(ScoreEvent.gameWin);
             Debug.Log("You Win!!!!!");
         }
-        else 
+        else
         {
+            ScoreManger(ScoreEvent.gameLose);
             Debug.Log("You Lose");
         }
         
