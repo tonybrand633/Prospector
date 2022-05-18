@@ -20,6 +20,15 @@ public class Prospector : MonoBehaviour
     public static int HIGH_SCORE_THIS_ROUND;
     public static int HIGH_SCORE;
     public static int SCORE_CONTINUE;
+
+    public Transform endScorePos;
+    public Vector3 fsPosMid = new Vector3(0.5f,0.90f,0);
+    public Vector3 fsPosRun = new Vector3(0.5f, 0.75f, 0);
+    public Vector3 fsPosMid2 = new Vector3(0.5f, 0.5f, 0);
+    public Vector3 fsPosEnd = new Vector3(1.0f, 0.65f, 0);
+
+    public FloatingScore fsRun;
+
     public Deck deck;
     public TextAsset xmlText;
 
@@ -37,6 +46,9 @@ public class Prospector : MonoBehaviour
     public List<CardProspector> discardPile;
     public List<CardProspector> drawPile;
 
+
+
+    //发牌计时器
     public float timer = 2f;
     public float timeBefore;
 
@@ -57,6 +69,7 @@ public class Prospector : MonoBehaviour
 
     void Start()
     {
+        ScoreBoard.S.score = HIGH_SCORE;
         //初始化记录纸牌
         deck = GetComponent<Deck>();
         deck.InitDeck(xmlText.text);
@@ -141,9 +154,8 @@ public class Prospector : MonoBehaviour
             GameOver(true);
 
         }
-        if (drawPile.Count <= 0)
+        if (drawPile.Count <= 0&&Over)
         {
-
             //gameOver = false;
             GameOver(false);
         }
@@ -151,9 +163,11 @@ public class Prospector : MonoBehaviour
 
     void ScoreManger(ScoreEvent sevt)
     {
+        List<Vector3> fsPts;
+        Vector3 scoreBoardPos;
+        Vector3 midPos;
         switch (sevt)
         {
-
             case ScoreEvent.draw:
                 SCORE_CONTINUE = 0;
                 break;
@@ -161,9 +175,32 @@ public class Prospector : MonoBehaviour
                 SCORE_CONTINUE += 1;
                 HIGH_SCORE_THIS_ROUND += SCORE_CONTINUE;
                 AdjustHighScore(HIGH_SCORE_THIS_ROUND);
-                Debug.Log("连续得分:" + SCORE_CONTINUE);                
-                Debug.Log("当前得分" + (HIGH_SCORE_PRE_ROUND + HIGH_SCORE_THIS_ROUND).ToString());
-                Debug.Log("最高分" + HIGH_SCORE);
+                FloatingScore fs;
+                //从MousePosition移动到fsPosRun
+                Vector3 p0 = Input.mousePosition;
+                //p0.x /= Screen.width;
+                //p0.y /= Screen.height;
+                fsPts = new List<Vector3>();
+                fsPts.Add(p0);
+                
+                scoreBoardPos = ScoreBoard.S.transform.position;
+                midPos = (p0 + scoreBoardPos) / 2;
+                fsPts.Add(midPos);
+                fsPts.Add(scoreBoardPos);
+                fs = ScoreBoard.S.CreateFloatingScore(SCORE_CONTINUE, fsPts);
+                fs.fontSizes = new List<float>(new float[] { 10, 80, 50 });
+                if (fsRun == null)
+                {
+                    fsRun = fs;
+                    fsRun.reportFinshTo = null;
+                }
+                else 
+                {
+                    fs.reportFinshTo = fsRun.gameObject;
+                }
+                //Debug.Log("连续得分:" + SCORE_CONTINUE);                
+                //Debug.Log("当前得分" + (HIGH_SCORE_PRE_ROUND + HIGH_SCORE_THIS_ROUND).ToString());
+                //Debug.Log("最高分" + HIGH_SCORE);
                 break;
             case ScoreEvent.mineGold:
                 break;
@@ -177,6 +214,21 @@ public class Prospector : MonoBehaviour
                 HIGH_SCORE_PRE_ROUND = 0;
                 HIGH_SCORE_THIS_ROUND = 0;
                 PlayerPrefs.DeleteKey("HIGH_SCORE_PRE_ROUND");
+                if (fsRun!=null) 
+                {
+                    scoreBoardPos = ScoreBoard.S.transform.position;
+                    Vector3 endPos = endScorePos.transform.position;
+                    midPos = (scoreBoardPos + endPos) / 2;
+                    fsPts = new List<Vector3>();
+                    fsPts.Add(scoreBoardPos);
+                    fsPts.Add(midPos);
+                    fsPts.Add(endPos);
+                    fsRun.reportFinshTo = ScoreBoard.S.gameObject;
+                    fsRun.Init(fsPts, 0, 1);
+                    //同时调整fontSize
+                    fsRun.fontSizes = new List<float>(new float[] { 50, 50, 50 });
+                    fsRun = null;
+                }
                 break;
             case ScoreEvent.gameWin:
                 AdjustHighScore(HIGH_SCORE_PRE_ROUND);
