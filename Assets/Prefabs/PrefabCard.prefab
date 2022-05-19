@@ -114,13 +114,11 @@ MonoBehaviour:
   color: {r: 0, g: 0, b: 0, a: 1}
   colorN: Black
   back: {fileID: 0}
-  def:
-    face: 
-    rank: 0
-    pips: []
+  spriteRenderers: []
   state: 0
   hiddenBy: []
   LayerID: 0
+  slotID: 0
   slotDef:
     slotID: 0
     layerID: 0

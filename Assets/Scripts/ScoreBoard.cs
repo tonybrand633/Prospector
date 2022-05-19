@@ -45,6 +45,7 @@ public class ScoreBoard : MonoBehaviour
 
     public void FSCallback(FloatingScore fs) 
     {
+        Debug.Log("ScoreBoard CallBack");
         score += fs.score;
     }
 

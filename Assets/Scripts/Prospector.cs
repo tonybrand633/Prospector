@@ -21,12 +21,13 @@ public class Prospector : MonoBehaviour
     public static int HIGH_SCORE;
     public static int SCORE_CONTINUE;
 
+    public Transform curScorePos;
     public Transform endScorePos;
+    
     public Vector3 fsPosMid = new Vector3(0.5f,0.90f,0);
     public Vector3 fsPosRun = new Vector3(0.5f, 0.75f, 0);
     public Vector3 fsPosMid2 = new Vector3(0.5f, 0.5f, 0);
     public Vector3 fsPosEnd = new Vector3(1.0f, 0.65f, 0);
-
     public FloatingScore fsRun;
 
     public Deck deck;
@@ -40,6 +41,7 @@ public class Prospector : MonoBehaviour
     public float xoffset = 3f;
     public float yoffset = -2.5f;
     public Transform layoutAnchor;
+    public bool isLayoutReady;
 
     public CardProspector target;
     public List<CardProspector> tableau;
@@ -51,6 +53,7 @@ public class Prospector : MonoBehaviour
     //发牌计时器
     public float timer = 2f;
     public float timeBefore;
+    public float delayReload = 4f;
 
     // Start is called before the first frame update
 
@@ -85,7 +88,13 @@ public class Prospector : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        //if (!isLayoutReady) 
+        //{
+        //    foreach (CardProspector cd in drawPile) 
+        //    {
+        //        cd.GetComponent<BoxCollider>().isTrigger = true;
+        //    }
+        //}
     }
 
     public void CardClicked(CardProspector cd)
@@ -164,7 +173,8 @@ public class Prospector : MonoBehaviour
     void ScoreManger(ScoreEvent sevt)
     {
         List<Vector3> fsPts;
-        Vector3 scoreBoardPos;
+        Vector3 curPos;
+        
         Vector3 midPos;
         switch (sevt)
         {
@@ -174,7 +184,11 @@ public class Prospector : MonoBehaviour
             case ScoreEvent.mine:
                 SCORE_CONTINUE += 1;
                 HIGH_SCORE_THIS_ROUND += SCORE_CONTINUE;
+
                 AdjustHighScore(HIGH_SCORE_THIS_ROUND);
+
+                //取得当前的分数终点位置
+                curPos = this.curScorePos.transform.position;
                 FloatingScore fs;
                 //从MousePosition移动到fsPosRun
                 Vector3 p0 = Input.mousePosition;
@@ -182,13 +196,12 @@ public class Prospector : MonoBehaviour
                 //p0.y /= Screen.height;
                 fsPts = new List<Vector3>();
                 fsPts.Add(p0);
-                
-                scoreBoardPos = ScoreBoard.S.transform.position;
-                midPos = (p0 + scoreBoardPos) / 2;
+                                
+                midPos = (p0 + curPos) / 2;
                 fsPts.Add(midPos);
-                fsPts.Add(scoreBoardPos);
+                fsPts.Add(curPos);
                 fs = ScoreBoard.S.CreateFloatingScore(SCORE_CONTINUE, fsPts);
-                fs.fontSizes = new List<float>(new float[] { 10, 80, 50 });
+                fs.fontSizes = new List<float>(new float[] { 10, 100, 65 });
                 if (fsRun == null)
                 {
                     fsRun = fs;
@@ -216,19 +229,20 @@ public class Prospector : MonoBehaviour
                 PlayerPrefs.DeleteKey("HIGH_SCORE_PRE_ROUND");
                 if (fsRun!=null) 
                 {
-                    scoreBoardPos = ScoreBoard.S.transform.position;
+                    curPos = this.curScorePos.transform.position; 
                     Vector3 endPos = endScorePos.transform.position;
-                    midPos = (scoreBoardPos + endPos) / 2;
+                    midPos = (curPos + endPos) / 2;
                     fsPts = new List<Vector3>();
-                    fsPts.Add(scoreBoardPos);
+                    fsPts.Add(curPos);
                     fsPts.Add(midPos);
                     fsPts.Add(endPos);
-                    fsRun.reportFinshTo = ScoreBoard.S.gameObject;
+                    fsRun.reportFinshTo = null;
                     fsRun.Init(fsPts, 0, 1);
                     //同时调整fontSize
-                    fsRun.fontSizes = new List<float>(new float[] { 50, 50, 50 });
+                    fsRun.fontSizes = new List<float>(new float[] { 100, 50, 65 });
                     fsRun = null;
                 }
+                Debug.Log("High Score:" + HIGH_SCORE);
                 break;
             case ScoreEvent.gameWin:
                 AdjustHighScore(HIGH_SCORE_PRE_ROUND);
@@ -259,7 +273,12 @@ public class Prospector : MonoBehaviour
             ScoreManger(ScoreEvent.gameLose);
             Debug.Log("You Lose");
         }
-        
+
+        Invoke("ReloadLevel", delayReload);
+    }
+
+    void ReloadLevel() 
+    {
         UnityEngine.SceneManagement.SceneManager.LoadScene("MainScene");
     }
 
@@ -454,6 +473,7 @@ public class Prospector : MonoBehaviour
     {
         yield return new WaitForSeconds(1f+timer);
         
-        cp.transform.localPosition = new Vector3(layout.multiplier.x * slotDef.x, layout.multiplier.y * slotDef.y, -slotDef.layerID);        
+        cp.transform.localPosition = new Vector3(layout.multiplier.x * slotDef.x, layout.multiplier.y * slotDef.y, -slotDef.layerID);
+        Debug.Log(cp.transform.localPosition);
     }
 }

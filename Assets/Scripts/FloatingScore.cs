@@ -67,6 +67,7 @@ public class FloatingScore : MonoBehaviour
     //被SendMessage调用
     public void FSCallback(FloatingScore fs) 
     {
+        Debug.Log("FloatingScore CallBack");
         score += fs.score;
     }
 
@@ -78,6 +79,7 @@ public class FloatingScore : MonoBehaviour
         }
 
         float u = (Time.time - timeStart) / timeDuration;
+        //Debug.Log(u);
         float uC = Easing.Ease(u, easingCuve);
 
         if (u < 0)
@@ -114,7 +116,8 @@ public class FloatingScore : MonoBehaviour
         {
             //如果fontSizes有值，那么将调整text的FontSizes
             int size = Mathf.RoundToInt(Utils.Bezier(uC, fontSizes));
-            GetComponent<Text>().fontSize = size;            
+            GetComponent<Text>().fontSize = size;
+            GetComponent<Text>().color = Color.black;
         }
     }
 
