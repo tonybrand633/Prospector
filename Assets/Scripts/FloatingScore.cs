@@ -39,6 +39,7 @@ public class FloatingScore : MonoBehaviour
 
     //移动完成时，游戏对象将接受SendMessage();
     public GameObject reportFinshTo = null;
+    public GameObject endReportFinish = null;
 
     //设置floatingScore和移动
 
@@ -67,8 +68,13 @@ public class FloatingScore : MonoBehaviour
     //被SendMessage调用
     public void FSCallback(FloatingScore fs) 
     {
-        Debug.Log("FloatingScore CallBack");
+        Debug.Log("分数增加,游戏物体名称："+this.gameObject.name);
         score += fs.score;
+    }
+
+    public void FSEndCallback(FloatingScore fs) 
+    {
+        score = fs.score;
     }
 
     void Update()
@@ -96,8 +102,16 @@ public class FloatingScore : MonoBehaviour
                 fsState = FSState.post;
                 if (reportFinshTo != null)
                 {
-                    reportFinshTo.SendMessage("FSCallback", this);
-                    Destroy(gameObject);
+                    if (endReportFinish != null)
+                    {
+                        endReportFinish.SendMessage("FSEndCallback", this);
+                        Destroy(gameObject);
+                    }
+                    else 
+                    {
+                        reportFinshTo.SendMessage("FSCallback", this);
+                        Destroy(gameObject);
+                    }                    
                 }
                 else
                 {

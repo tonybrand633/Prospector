@@ -29,6 +29,7 @@ public class Prospector : MonoBehaviour
     public Vector3 fsPosMid2 = new Vector3(0.5f, 0.5f, 0);
     public Vector3 fsPosEnd = new Vector3(1.0f, 0.65f, 0);
     public FloatingScore fsRun;
+    public FloatingScore fsEndRun;
 
     public Deck deck;
     public TextAsset xmlText;
@@ -42,6 +43,7 @@ public class Prospector : MonoBehaviour
     public float yoffset = -2.5f;
     public Transform layoutAnchor;
     public bool isLayoutReady;
+    public int isFirstLoad = 0;
 
     public CardProspector target;
     public List<CardProspector> tableau;
@@ -58,14 +60,22 @@ public class Prospector : MonoBehaviour
     // Start is called before the first frame update
 
     void Awake()
-    {
-        S = this;
-        Debug.Log("上一轮分数"+HIGH_SCORE_PRE_ROUND);
-        Debug.Log("本轮分数"+HIGH_SCORE_THIS_ROUND);
-
+    {        
+        if (PlayerPrefs.HasKey("isFirstLoad")) 
+        {
+            isFirstLoad = PlayerPrefs.GetInt("isFirstLoad");
+        }
+        Debug.Log(isFirstLoad);   
+        S = this;                
         if (PlayerPrefs.HasKey("HIGH_SCORE_PRE_ROUND"))
         {
             HIGH_SCORE_PRE_ROUND = PlayerPrefs.GetInt("HIGH_SCORE_PRE_ROUND");
+            Debug.Log("上一轮分数" + HIGH_SCORE_PRE_ROUND);            
+            if (HIGH_SCORE_PRE_ROUND!=0&&isFirstLoad==1) 
+            {                
+                fsRun = GameObject.Find("curScore").GetComponent<FloatingScore>();
+                Debug.Log("We Find it");
+            }                                  
         }
         SCORE_CONTINUE = 0;
     }
@@ -88,13 +98,19 @@ public class Prospector : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (!isLayoutReady) 
-        //{
-        //    foreach (CardProspector cd in drawPile) 
-        //    {
-        //        cd.GetComponent<BoxCollider>().isTrigger = true;
-        //    }
-        //}
+//#if UNITY_EDITOR
+//        if (!UnityEditor.EditorApplication.isPlaying) 
+//        {
+//            Debug.Log("Kill Application");
+//            PlayerPrefs.DeleteKey("HIGH_SCORE_PRE_ROUND");
+//        }
+//#else
+//        if (!Application.isPlaying) 
+//        {
+//            Debug.Log("Kill Application ");
+//            PlayerPrefs.DeleteKey("HIGH_SCORE_PRE_ROUND");
+//        }
+//#endif
     }
 
     public void CardClicked(CardProspector cd)
@@ -200,7 +216,7 @@ public class Prospector : MonoBehaviour
                 midPos = (p0 + curPos) / 2;
                 fsPts.Add(midPos);
                 fsPts.Add(curPos);
-                fs = ScoreBoard.S.CreateFloatingScore(SCORE_CONTINUE, fsPts);
+                fs = ScoreBoard.S.CreateFloatingScore(SCORE_CONTINUE, fsPts,"curScore");
                 fs.fontSizes = new List<float>(new float[] { 10, 100, 65 });
                 if (fsRun == null)
                 {
@@ -209,6 +225,7 @@ public class Prospector : MonoBehaviour
                 }
                 else 
                 {
+                    //这里变成了fs是传递过去然后销毁的，给的是fsRun增加分数，fsRun固定不变
                     fs.reportFinshTo = fsRun.gameObject;
                 }
                 //Debug.Log("连续得分:" + SCORE_CONTINUE);                
@@ -223,31 +240,51 @@ public class Prospector : MonoBehaviour
         switch (sevt)
         {
             case ScoreEvent.gameLose:
+                if (HIGH_SCORE_THIS_ROUND<HIGH_SCORE) 
+                {
+                    Destroy(fsRun.gameObject);
+                    return;
+                }
                 AdjustHighScore(HIGH_SCORE_PRE_ROUND);
                 HIGH_SCORE_PRE_ROUND = 0;
                 HIGH_SCORE_THIS_ROUND = 0;
                 PlayerPrefs.DeleteKey("HIGH_SCORE_PRE_ROUND");
-                if (fsRun!=null) 
+                curPos = this.curScorePos.transform.position;
+                Vector3 endPos = endScorePos.transform.position;
+                midPos = (curPos + endPos) / 2;
+                fsPts = new List<Vector3>();
+                FloatingScore fs;
+
+                fsPts.Add(curPos);
+                fsPts.Add(midPos);
+                fsPts.Add(endPos);
+                fs = ScoreBoard.S.CreateFloatingScore(HIGH_SCORE, fsPts,"HighScore");
+                //DontDestroyOnLoad(fsRun);
+                fs.Init(fsPts, 0, 1);
+                //同时调整fontSize
+                fs.fontSizes = new List<float>(new float[] { 100, 50, 65 });
+                if (fsEndRun == null)
                 {
-                    curPos = this.curScorePos.transform.position; 
-                    Vector3 endPos = endScorePos.transform.position;
-                    midPos = (curPos + endPos) / 2;
-                    fsPts = new List<Vector3>();
-                    fsPts.Add(curPos);
-                    fsPts.Add(midPos);
-                    fsPts.Add(endPos);
-                    fsRun.reportFinshTo = null;
-                    fsRun.Init(fsPts, 0, 1);
-                    //同时调整fontSize
-                    fsRun.fontSizes = new List<float>(new float[] { 100, 50, 65 });
-                    fsRun = null;
+                    fsEndRun = fs;
+                    fsEndRun.reportFinshTo = null;
                 }
+                else 
+                {
+                    fs.endReportFinish = fsEndRun.gameObject;
+                }
+                
+                Destroy(fsRun.gameObject);
+                HIGH_SCORE_PRE_ROUND = 0;
                 Debug.Log("High Score:" + HIGH_SCORE);
+                isFirstLoad = 1;
+                PlayerPrefs.SetInt("isFirstLoad", isFirstLoad);
                 break;
             case ScoreEvent.gameWin:
                 AdjustHighScore(HIGH_SCORE_PRE_ROUND);
                 PlayerPrefs.SetInt("HIGH_SCORE_PRE_ROUND", HIGH_SCORE_THIS_ROUND + HIGH_SCORE_PRE_ROUND);
-                HIGH_SCORE_THIS_ROUND = 0;
+                isFirstLoad = 1;                
+                PlayerPrefs.SetInt("isFirstLoad", isFirstLoad);
+                //HIGH_SCORE_THIS_ROUND = 0;
                 break;
         }
     }
@@ -257,8 +294,17 @@ public class Prospector : MonoBehaviour
         if (highScorePreRound > HIGH_SCORE)
         {
             HIGH_SCORE = highScorePreRound;
+            //if (fsRun!=null) 
+            //{
+            //    fsRun.reportFinshTo = ScoreBoard.S.gameObject;
+            //}            
         }
         PlayerPrefs.SetInt("HIGH_SCORE", HIGH_SCORE);
+    }
+
+    void KeepHighScore() 
+    {
+        
     }
 
     public void GameOver(bool gameOver) 
@@ -474,6 +520,6 @@ public class Prospector : MonoBehaviour
         yield return new WaitForSeconds(1f+timer);
         
         cp.transform.localPosition = new Vector3(layout.multiplier.x * slotDef.x, layout.multiplier.y * slotDef.y, -slotDef.layerID);
-        Debug.Log(cp.transform.localPosition);
+        //Debug.Log(cp.transform.localPosition);
     }
 }

@@ -49,9 +49,10 @@ public class ScoreBoard : MonoBehaviour
         score += fs.score;
     }
 
-    public FloatingScore CreateFloatingScore(int amt,List<Vector3>pts) 
+    public FloatingScore CreateFloatingScore(int amt,List<Vector3>pts,string name) 
     {
         GameObject go = Instantiate(prefabFloatingScore);
+        go.name = name;
         go.transform.SetParent(canvas.transform);
         FloatingScore fs = go.GetComponent<FloatingScore>();
         fs.score = amt;
