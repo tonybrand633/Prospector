@@ -56,7 +56,7 @@ public class ScoreBoard : MonoBehaviour
         go.transform.SetParent(canvas.transform);
         FloatingScore fs = go.GetComponent<FloatingScore>();
         fs.score = amt;
-        fs.reportFinshTo = this.gameObject;
+        fs.reportFinshTo = null;
         fs.Init(pts);
         return fs;
     }

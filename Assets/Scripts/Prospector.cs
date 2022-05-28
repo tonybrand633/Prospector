@@ -21,6 +21,8 @@ public class Prospector : MonoBehaviour
     public static int HIGH_SCORE;
     public static int SCORE_CONTINUE;
 
+
+
     public Transform curScorePos;
     public Transform endScorePos;
     
@@ -60,22 +62,27 @@ public class Prospector : MonoBehaviour
     // Start is called before the first frame update
 
     void Awake()
-    {        
-        if (PlayerPrefs.HasKey("isFirstLoad")) 
-        {
-            isFirstLoad = PlayerPrefs.GetInt("isFirstLoad");
-        }
-        Debug.Log(isFirstLoad);   
-        S = this;                
+    {
+        //if (PlayerPrefs.HasKey("isFirstLoad")) 
+        //{
+        //    isFirstLoad = PlayerPrefs.GetInt("isFirstLoad");
+        //}
+        //Debug.Log(isFirstLoad);   
+        S = this;
         if (PlayerPrefs.HasKey("HIGH_SCORE_PRE_ROUND"))
         {
             HIGH_SCORE_PRE_ROUND = PlayerPrefs.GetInt("HIGH_SCORE_PRE_ROUND");
-            Debug.Log("上一轮分数" + HIGH_SCORE_PRE_ROUND);            
-            if (HIGH_SCORE_PRE_ROUND!=0&&isFirstLoad==1) 
-            {                
-                fsRun = GameObject.Find("curScore").GetComponent<FloatingScore>();
-                Debug.Log("We Find it");
-            }                                  
+            Debug.Log("上一轮分数" + HIGH_SCORE_PRE_ROUND);
+            //if (HIGH_SCORE_PRE_ROUND!=0&&isFirstLoad==1) 
+            //{                                
+            //    //fsRun = GameObject.Find("curScore").GetComponent<FloatingScore>();
+            //    Debug.Log("We Find it");
+            //}                                  
+        }
+        if (GameObject.Find("curScore")!=null) 
+        {
+            fsRun = GameObject.Find("curScore").GetComponent<FloatingScore>();
+            Debug.Log("Find it");
         }
         SCORE_CONTINUE = 0;
     }
@@ -240,14 +247,15 @@ public class Prospector : MonoBehaviour
         switch (sevt)
         {
             case ScoreEvent.gameLose:
+                //Debug.Log("HighScoreThisRound:" + HIGH_SCORE_THIS_ROUND);
                 if (HIGH_SCORE_THIS_ROUND<HIGH_SCORE) 
                 {
+                    Debug.Log("HighThisRound:" + HIGH_SCORE_THIS_ROUND);
                     Destroy(fsRun.gameObject);
                     return;
                 }
                 AdjustHighScore(HIGH_SCORE_PRE_ROUND);
-                HIGH_SCORE_PRE_ROUND = 0;
-                HIGH_SCORE_THIS_ROUND = 0;
+                
                 PlayerPrefs.DeleteKey("HIGH_SCORE_PRE_ROUND");
                 curPos = this.curScorePos.transform.position;
                 Vector3 endPos = endScorePos.transform.position;
@@ -258,33 +266,44 @@ public class Prospector : MonoBehaviour
                 fsPts.Add(curPos);
                 fsPts.Add(midPos);
                 fsPts.Add(endPos);
-                fs = ScoreBoard.S.CreateFloatingScore(HIGH_SCORE, fsPts,"HighScore");
-                //DontDestroyOnLoad(fsRun);
-                fs.Init(fsPts, 0, 1);
-                //同时调整fontSize
-                fs.fontSizes = new List<float>(new float[] { 100, 50, 65 });
-                if (fsEndRun == null)
+                
+                if (GameObject.Find("HighScore") != null)
                 {
+                    fs = ScoreBoard.S.CreateFloatingScore(HIGH_SCORE_THIS_ROUND, fsPts, "tempScore");
+                    fsEndRun = GameObject.Find("HighScore").GetComponent<FloatingScore>();
+                    fs.endReportFinish = fsEndRun.gameObject;
+                }
+                else
+                {
+                    fs = ScoreBoard.S.CreateFloatingScore(HIGH_SCORE, fsPts, "HighScore");
                     fsEndRun = fs;
                     fsEndRun.reportFinshTo = null;
                 }
-                else 
-                {
-                    fs.endReportFinish = fsEndRun.gameObject;
-                }
+                //fs = ScoreBoard.S.CreateFloatingScore(HIGH_SCORE, fsPts,"HighScore");
+                fs.fontSizes = new List<float>(new float[] { 100, 50, 65 });
+                //DontDestroyOnLoad(fsRun);
+                fs.Init(fsPts, 0, 1);
+                //同时调整fontSize
+                
+
+                //if (fsEndRun == null)
+                //{
+                //    fsEndRun = fs;
+                //    fsEndRun.reportFinshTo = null;
+                //}
+                //else 
+                //{
+                //    fs.endReportFinish = fsEndRun.gameObject;
+                //}
                 
                 Destroy(fsRun.gameObject);
                 HIGH_SCORE_PRE_ROUND = 0;
+                HIGH_SCORE_THIS_ROUND = 0;
                 Debug.Log("High Score:" + HIGH_SCORE);
-                isFirstLoad = 1;
-                PlayerPrefs.SetInt("isFirstLoad", isFirstLoad);
                 break;
             case ScoreEvent.gameWin:
                 AdjustHighScore(HIGH_SCORE_PRE_ROUND);
                 PlayerPrefs.SetInt("HIGH_SCORE_PRE_ROUND", HIGH_SCORE_THIS_ROUND + HIGH_SCORE_PRE_ROUND);
-                isFirstLoad = 1;                
-                PlayerPrefs.SetInt("isFirstLoad", isFirstLoad);
-                //HIGH_SCORE_THIS_ROUND = 0;
                 break;
         }
     }

@@ -11,27 +11,26 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        
         if (S == null)
         {
-            S = this;
-            DontDestroyOnLoad(this);
+            S = this;            
         }
-        else 
-        {
-            Destroy(this);
-        }
-        //if (canvas==null) 
+        
+        //if (GameObject.Find("Canvas")!=null)
         //{
+        //    Debug.Log("Don't Find Canvas");
         //    canvas = Resources.Load<GameObject>("Canvas");
         //    Instantiate(canvas);
-        //}        
+        //    canvas.name = "Canvas";
+        //}
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        canvas = GameObject.Find("Canvas");
-        uiText = canvas.GetComponentsInChildren<Text>();        
+        
+        //uiText = canvas.GetComponentsInChildren<Text>();        
     }
 
     // Update is called once per frame

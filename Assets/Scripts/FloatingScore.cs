@@ -102,16 +102,16 @@ public class FloatingScore : MonoBehaviour
                 fsState = FSState.post;
                 if (reportFinshTo != null)
                 {
-                    if (endReportFinish != null)
-                    {
-                        endReportFinish.SendMessage("FSEndCallback", this);
-                        Destroy(gameObject);
-                    }
-                    else 
-                    {
-                        reportFinshTo.SendMessage("FSCallback", this);
-                        Destroy(gameObject);
-                    }                    
+
+                    reportFinshTo.SendMessage("FSCallback", this);
+                    Destroy(gameObject);
+                    
+                } else if (endReportFinish!=null) 
+                {
+
+                    endReportFinish.SendMessage("FSEndCallback", this);
+                    Destroy(gameObject);
+
                 }
                 else
                 {
