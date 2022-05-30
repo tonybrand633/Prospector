@@ -334,6 +334,7 @@ public class Utils : MonoBehaviour {
 	}
 	
 	
+	//递归贝塞尔曲线
 	// The same two functions for float
 	static public float Bezier( float u, List<float> vList ) {
 		// If there is only one element in vList, return it
@@ -425,12 +426,16 @@ public class Utils : MonoBehaviour {
 		str += "."+(f*Mathf.Pow(10,places));
 		return( str );
 	}
+
+	//这是一个把数字输入：100000
+	//转换为100，000
 	static public string AddCommasToNumber(int n) {
 		int rem;
 		int div;
 		string res = "";
 		string rems;
 		while (n>0) {
+			//取余对象为1000，即得到后三位数
 			rem = n % 1000;
 			div = n / 1000;
 			rems = rem.ToString();
@@ -455,7 +460,7 @@ public class Utils : MonoBehaviour {
 	
 }
 
-
+//值得研究，是一个插值运动的模组和函数
 //============================ Easing Classes ============================
 [System.Serializable]
 public class EasingCachedCurve {

@@ -15,5 +15,12 @@ public class CardProspector : Card
     public CardState state = CardState.drawpile;
     public List<CardProspector> hiddenBy = new List<CardProspector>();
     public int LayerID;
+    public int slotID;
     public SlotDef slotDef;
+
+    public override void OnMouseUpAsButton()
+    {
+        Prospector.S.CardClicked(this);
+        base.OnMouseUpAsButton();
+    }
 }

@@ -28,7 +28,7 @@ public class Layout : MonoBehaviour
     public SlotDef drawPile;
     public SlotDef discardPile;
     //根据LayerID来读取LayerName
-    public string[] LayerIDName = new string[] { "Row0", "Row1", "Row2", "Row3", "Discard", "Draw" };
+    public string[] LayerIDName = new string[] { "Raw0", "Raw1", "Raw2", "Raw3", "Discard", "Draw" };
 
     public void ReadLayOut(string xmlText) 
     {
@@ -81,9 +81,11 @@ public class Layout : MonoBehaviour
                     break;
                 case "drawpile":
                     slotDef.xStagger.x = float.Parse(slot.att("xstagger"));
+                    drawPile = slotDef;
                     SlotDefs.Add(slotDef);
                     break;
                 case "discardpile":
+                    discardPile = slotDef;
                     SlotDefs.Add(slotDef);
                     break;
             }

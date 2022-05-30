@@ -41,12 +41,21 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: deco
+  - name: Raw0
     uniqueID: 2892532867
     locked: 0
-  - name: letter
+  - name: Raw1
     uniqueID: 718690711
     locked: 0
-  - name: back
+  - name: Raw2
     uniqueID: 1580911989
+    locked: 0
+  - name: Raw3
+    uniqueID: 2378644429
+    locked: 0
+  - name: Discard
+    uniqueID: 2727826677
+    locked: 0
+  - name: Draw
+    uniqueID: 555502389
     locked: 0
